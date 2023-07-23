@@ -1,0 +1,9 @@
+il faut deformer le modele pour faire un x10 entre les faux positif et faux
+negatif
+
+pour l'equilibre des classes il faut reduire les 0 et agmenter les 1 genre
+autour de 26k il faut sortir une matrice de correlation
+
+render.com, https://www.serverless.com/ pour le deployement il faut travailler
+sur des branches et merge avec des pull requests avec test du code et du linker
+avec black
