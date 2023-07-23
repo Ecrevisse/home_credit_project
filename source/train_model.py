@@ -64,10 +64,7 @@ def display_roc_curve(model, X_test, y_test):
 
 def display_confusion_matrix(model, X_test, y_test, threshold=0.5):
     df = pd.DataFrame(model.predict_proba(X_test))
-    print(df[:10])
-    print(f"columns {df.columns}")
     predictions = np.where(df.iloc[:, 1] > threshold, 1, 0)
-    print(predictions[:10])
     cm = confusion_matrix(y_test, predictions, labels=model.classes_)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=model.classes_)
     disp.plot()
