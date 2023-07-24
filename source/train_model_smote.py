@@ -64,8 +64,8 @@ def eval_metrics(actual, pred, model, X_test, y_test, threshold=0.5):
     auc = roc_auc_score(actual, pred)
     cm = get_confusion_matrix(model, X_test, y_test, threshold)
     TN = cm[0][0]
-    FP = cm[0][1] * 10  # FP is 10 times worst than FN
-    FN = cm[1][0]
+    FP = cm[0][1]
+    FN = cm[1][0] * 10  # FN is 10 times worst than FP
     TP = cm[1][1]
     F1_score = 2 * TP / (2 * TP + FP + FN)  # F1 score
     return auc, F1_score
