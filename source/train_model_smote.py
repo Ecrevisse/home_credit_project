@@ -197,14 +197,14 @@ if __name__ == "__main__":
             # There are other ways to use the Model Registry, which depends on the use case,
             # please refer to the doc for more information:
             # https://mlflow.org/docs/latest/model-registry.html#api-workflow
-            mlflow.sklearn.log_model(
+            mlflow.lightgbm.log_model(
                 clf,
                 "model",
                 registered_model_name="LightGBMHomeCredit",
                 signature=signature,
             )
         else:
-            mlflow.sklearn.log_model(clf, "model", signature=signature)
+            mlflow.lightgbm.log_model(clf, "model", signature=signature)
 
         del clf, train_x, train_y, valid_x, valid_y
         gc.collect()
