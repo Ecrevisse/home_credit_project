@@ -38,7 +38,7 @@ class CreditModel:
         print("model ready")
 
     def _load_and_prepare_data(self, cols):
-        df = pd.read_csv("../input/cleaned_data.csv", index_col="index")
+        df = pd.read_csv("./input/cleaned_data.csv", index_col="index")
 
         test_df = df[df["TARGET"].isnull()]
 
