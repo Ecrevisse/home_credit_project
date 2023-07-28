@@ -165,3 +165,8 @@ mlruns/
 
 *.png
 *.csv
+
+!/mlruns/0/0cb98077b68b4bba8ea208b79cb1d2e8/
+!/source/mlruns/0/0cb98077b68b4bba8ea208b79cb1d2e8/
+!/input/test_cleaned.csv
+!/input/application_test.csv

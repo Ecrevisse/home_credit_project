@@ -1,0 +1,15 @@
+artifact_uri: file:///home/romeo/work/ocr/projets/7/home_credit_project/source/mlruns/0/0cb98077b68b4bba8ea208b79cb1d2e8/artifacts
+end_time: 1690325826692
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 0cb98077b68b4bba8ea208b79cb1d2e8
+run_name: upbeat-foal-345
+run_uuid: 0cb98077b68b4bba8ea208b79cb1d2e8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1690325805586
+status: 3
+tags: []
+user_id: romeo
