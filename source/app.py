@@ -13,9 +13,9 @@ def index():
     return {"message": "Hello, stranger"}
 
 
-@app.post("/predict")
-def predict_species(input: CreditModelInput):
-    return model.predict(input)
+# @app.post("/predict")
+# def predict_species(input: CreditModelInput):
+#     return model.predict(input)
 
 
 if __name__ == "__main__":
