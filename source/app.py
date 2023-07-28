@@ -2,10 +2,11 @@ import pandas as pd
 import mlflow
 import uvicorn
 from fastapi import FastAPI
-from model import CreditModelInput, CreditModel
+
+# from model import CreditModelInput, CreditModel
 
 app = FastAPI()
-model = CreditModel()
+# model = CreditModel()
 
 
 @app.get("/")
