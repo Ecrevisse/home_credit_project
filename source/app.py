@@ -3,8 +3,11 @@ import mlflow
 import uvicorn
 from fastapi import FastAPI
 
-# from .utils.model import CreditModelInput, CreditModel
-from . import model as ml
+import sys
+
+sys.path.insert(0, "./source")
+
+import model as ml
 
 # import utils.model as ml
 
