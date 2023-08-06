@@ -3,7 +3,7 @@ import mlflow
 import uvicorn
 from fastapi import FastAPI
 
-from .model import CreditModelInput, CreditModel
+from .utils.model import CreditModelInput, CreditModel
 
 
 app = FastAPI()
