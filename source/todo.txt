@@ -7,3 +7,11 @@ autour de 26k il faut sortir une matrice de correlation
 render.com, https://www.serverless.com/ pour le deployement il faut travailler
 sur des branches et merge avec des pull requests avec test du code et du linker
 avec black
+
+
+
+tableau info client id client, credit accepte ou non, son score en jauge, feature inportance local pour cette predictions
+ajouter d'autres graphiques de feature sselectionnees avec seleciton deroulante 
+
+pour l'api on donne juste l'id client 
+l'api charge les donnees de test

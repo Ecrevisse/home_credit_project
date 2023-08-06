@@ -3,11 +3,14 @@ import mlflow
 import uvicorn
 from fastapi import FastAPI
 
-from utils.model import CreditModelInput, CreditModel
+# from .utils.model import CreditModelInput, CreditModel
+from . import model as ml
+
+# import utils.model as ml
 
 
 app = FastAPI()
-model = CreditModel()
+model = ml.CreditModel()
 
 
 @app.get("/")
@@ -16,7 +19,7 @@ def index():
 
 
 @app.post("/predict")
-def predict_species(input: CreditModelInput):
+def predict_species(input: ml.CreditModelInput):
     return model.predict(input)
 
 
