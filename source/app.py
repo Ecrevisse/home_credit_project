@@ -9,10 +9,10 @@ sys.path.insert(0, "./source")
 
 import model as ml
 
-import logging
+# import logging
 
-logger = logging.getLogger("azure")
-logger.setLevel(logging.DEBUG)
+# logger = logging.getLogger("azure")
+# logger.setLevel(logging.DEBUG)
 
 print("----> The logger works !!!!!!!   YEAH \o/")
 
