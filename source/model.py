@@ -17,8 +17,11 @@ class CreditModel:
         logged_model = f"runs:/{run_id}/model"
 
         # DEBUG
-        print(f"DEBUG: current location: {os.getcwd()}")
-        print(f"DEBUG: all files in current location: {os.listdir(os.getcwd())}")
+        print(f"------DEBUG: current location: {os.getcwd()}")
+        print(f"------DEBUG: all files in current location: {os.listdir(os.getcwd())}")
+        print(
+            f"------DEBUG: all files in model folder: {os.listdir(os.getcwd() + '/mlruns/0/' + run_id + '/artifacts/model')}"
+        )
 
         client = MlflowClient()
         run = client.get_run(run_id)
