@@ -4,6 +4,7 @@ import mlflow
 from mlflow import MlflowClient
 from pydantic import BaseModel
 import gc
+import os
 
 
 class CreditModelInput(BaseModel):
@@ -14,6 +15,10 @@ class CreditModel:
     def __init__(self):
         run_id = "0cb98077b68b4bba8ea208b79cb1d2e8"
         logged_model = f"runs:/{run_id}/model"
+
+        # DEBUG
+        print(f"DEBUG: current location: {os.getcwd()}")
+        print(f"DEBUG: all files in current location: {os.listdir(os.getcwd())}")
 
         client = MlflowClient()
         run = client.get_run(run_id)

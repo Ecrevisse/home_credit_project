@@ -9,8 +9,12 @@ sys.path.insert(0, "./source")
 
 import model as ml
 
-# import utils.model as ml
+import logging
 
+logger = logging.getLogger("azure")
+logger.setLevel(logging.DEBUG)
+
+print("----> The logger works !!!!!!!   YEAH \o/")
 
 app = FastAPI()
 model = ml.CreditModel()
