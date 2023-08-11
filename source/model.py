@@ -5,6 +5,7 @@ from mlflow import MlflowClient
 from pydantic import BaseModel
 import gc
 import os
+import shap
 
 
 class CreditModelInput(BaseModel):
@@ -15,13 +16,6 @@ class CreditModel:
     def __init__(self):
         run_id = "0cb98077b68b4bba8ea208b79cb1d2e8"
         logged_model = f"runs:/{run_id}/model"
-
-        # DEBUG
-        print(f"------DEBUG: current location: {os.getcwd()}")
-        print(f"------DEBUG: all files in current location: {os.listdir(os.getcwd())}")
-        print(
-            f"------DEBUG: all files in model folder: {os.listdir(os.getcwd() + '/mlruns/0/' + run_id + '/artifacts/model')}"
-        )
 
         client = MlflowClient()
         run = client.get_run(run_id)
@@ -70,4 +64,4 @@ class CreditModel:
         )[:, 1]
         if len(pred) != 1:
             raise Exception(f"An issue occurred with the prediction")
-        return 1 if (pred[0] > self.threshold) else 0
+        return 1 if (pred[0] > self.threshold) else 0, pred[0], self.threshold
