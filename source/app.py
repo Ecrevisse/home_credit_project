@@ -19,9 +19,19 @@ def index():
     return {"message": "Hello, stranger"}
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 @app.post("/predict")
 def predict_species(input: ml.CreditModelInput):
     return model.predict(input)
+
+
+@app.post("/shap_local")
+def shapSummary(input: ml.CreditModelInput):
+    return model.shap_local(input)
 
 
 if __name__ == "__main__":
