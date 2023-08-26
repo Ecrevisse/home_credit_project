@@ -58,7 +58,7 @@ class CreditModel:
     def _load_and_prep_explainer(self):
         df = pd.read_feather("./input/valid_cleaned.feather")
 
-        df = df[:1000]
+        df = df[:10]
         df = df.fillna(0)
         df = df.replace([np.inf, -np.inf], 0)
 
