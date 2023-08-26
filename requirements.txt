@@ -20,6 +20,8 @@ GitPython==3.1.32
 greenlet==2.0.2
 gunicorn==21.2.0
 h11==0.14.0
+httpcore==0.17.3
+httpx==0.24.1
 idna==3.4
 importlib-metadata==6.8.0
 importlib-resources==6.0.1
