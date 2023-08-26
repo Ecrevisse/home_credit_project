@@ -40,7 +40,7 @@ class CreditModel:
         print(self.data.shape)
         print("model ready")
 
-        # self._load_and_prep_explainer()
+        self._load_and_prep_explainer()
 
     def _load_and_prepare_data(self, cols):
         # df = pd.read_csv("./input/cleaned_data.csv", index_col="index")
