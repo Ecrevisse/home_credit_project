@@ -56,6 +56,8 @@ class CreditModel:
         return test_df
 
     def _load_and_prep_explainer(self):
+        pd.read_feather("./input/valid_cleaned.feather")
+        return
         print("loading data... (for explainer)")
         df = pd.read_feather("./input/valid_cleaned.feather")
         print("data loaded")
