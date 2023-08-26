@@ -58,7 +58,7 @@ class CreditModel:
     def _load_and_prep_explainer(self):
         df = pd.read_feather("./input/valid_cleaned.feather")
 
-        df = df.sample(5)
+        # df = df[:1000]
         df = df.fillna(0)
         df = df.replace([np.inf, -np.inf], 0)
 
@@ -95,5 +95,20 @@ class CreditModel:
             "shap_values": shap_values.values.tolist(),
             "base_value": shap_values.base_values,
             "data": X.values.tolist(),
+            "feature_names": X.columns.tolist(),
+        }
+
+    def shap_global(self):
+        X = self.valid_data
+        X = X.drop(["SK_ID_CURR"], axis=1)
+        for col in X.columns:
+            if X[col].dtype == "bool":
+                X[col] = X[col].astype(int)
+
+        shap_values = self.explainer(X)[:, :, 1]
+        return {
+            "shap_values": shap_values.values.tolist(),
+            "base_value": shap_values.base_values.tolist(),
+            "data": shap_values.data.tolist(),
             "feature_names": X.columns.tolist(),
         }
