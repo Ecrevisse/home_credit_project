@@ -6,6 +6,7 @@ from pydantic import BaseModel
 import gc
 import os
 import shap
+import psutil
 
 
 class CreditModelInput(BaseModel):
@@ -56,8 +57,6 @@ class CreditModel:
         return test_df
 
     def _load_and_prep_explainer(self):
-        pd.read_feather("./input/valid_cleaned.feather")
-        return
         print("loading data... (for explainer)")
         df = pd.read_feather("./input/valid_cleaned.feather")
         print("data loaded")
@@ -72,9 +71,15 @@ class CreditModel:
                 df[col] = df[col].astype(int)
 
         df = df[self.data.columns]
-
+        print("RAM Used (GB):", psutil.virtual_memory()[3] / 1000000000)
         self.valid_data = df
-        self.explainer = shap.TreeExplainer(self.model)
+        self.explainer = shap.TreeExplainer(
+            self.model,
+            # data=df,
+            # feature_perturbation="interventional",
+            # check_additivity=False,
+        )
+        print("RAM Used (GB):", psutil.virtual_memory()[3] / 1000000000)
 
     def predict(self, input: CreditModelInput):
         X = self.data.loc[self.data["SK_ID_CURR"] == input.client_id]
@@ -104,16 +109,17 @@ class CreditModel:
         }
 
     def shap_global(self):
-        X = self.valid_data
-        X = X.drop(["SK_ID_CURR"], axis=1)
-        for col in X.columns:
-            if X[col].dtype == "bool":
-                X[col] = X[col].astype(int)
+        # X = self.valid_data
+        # X = X.drop(["SK_ID_CURR"], axis=1)
+        # for col in X.columns:
+        #     if X[col].dtype == "bool":
+        #         X[col] = X[col].astype(int)
 
-        shap_values = self.explainer(X)[:, :, 1]
-        return {
-            "shap_values": shap_values.values.tolist(),
-            "base_value": shap_values.base_values.tolist(),
-            "data": shap_values.data.tolist(),
-            "feature_names": X.columns.tolist(),
-        }
+        # shap_values = self.explainer(X)[:, :, 1]
+        # return {
+        #     "shap_values": shap_values.values.tolist(),
+        #     "base_value": shap_values.base_values.tolist(),
+        #     "data": shap_values.data.tolist(),
+        #     "feature_names": X.columns.tolist(),
+        # }
+        return {"toto": "toto"}
