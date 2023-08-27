@@ -105,7 +105,7 @@ class CreditModel:
         df = pd.read_feather("./input/valid_cleaned.feather")
         # show_memory("after read_feather")
 
-        # df = df[:10]
+        df = df[:1000]
         df = df.fillna(0)
         df = df.replace([np.inf, -np.inf], 0)
 
