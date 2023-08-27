@@ -7,6 +7,23 @@ import gc
 import os
 import shap
 import psutil
+import sys
+
+
+def show_memory(prefix=""):
+    process = psutil.Process(os.getpid())
+    print(f"{prefix} -> RAM Used (MB): {process.memory_info().rss / 1024 ** 2}")
+
+    objs = gc.get_objects()
+    s = sys.getsizeof(objs)
+    sizes = []
+    for i, o in enumerate(objs):
+        sizes.append(sys.getsizeof(o))
+        s += sys.getsizeof(o)
+    sizes.sort()
+
+    print(f"{prefix} -> Number of objects: {len(objs)}")
+    print(f"{prefix} -> Size of objects: {s / 1024 ** 2:.2f} MB")
 
 
 class CreditModelInput(BaseModel):
@@ -33,6 +50,8 @@ class CreditModel:
         cols = []
         for elem in python_model_for_signature._model_meta._signature.inputs.to_dict():
             cols.append(elem["name"])
+        print(f"model_signature: {sys.getsizeof(python_model_for_signature)}")
+        print(f"model: {sys.getsizeof(self.model)}")
         self.count_cols = int(run.data.params["count_cols"])
         self.threshold = float(run.data.params["threshold"])
 
@@ -42,6 +61,11 @@ class CreditModel:
         print("model ready")
 
         self._load_and_prep_explainer()
+
+        del python_model_for_signature
+        del run
+        del client
+        gc.collect()
 
     def _load_and_prepare_data(self, cols):
         # df = pd.read_csv("./input/cleaned_data.csv", index_col="index")
@@ -57,12 +81,11 @@ class CreditModel:
         return test_df
 
     def _load_and_prep_explainer(self):
-        print("loading data... (for explainer)")
+        # show_memory("before read_feather")
         df = pd.read_feather("./input/valid_cleaned.feather")
-        print("data loaded")
-        print(f"--> {df.shape}")
+        # show_memory("after read_feather")
 
-        df = df[:10]
+        # df = df[:10]
         df = df.fillna(0)
         df = df.replace([np.inf, -np.inf], 0)
 
@@ -70,16 +93,12 @@ class CreditModel:
             if df[col].dtype == "bool":
                 df[col] = df[col].astype(int)
 
+        # show_memory("before df = df[self.data.columns]")
         df = df[self.data.columns]
-        print("RAM Used (GB):", psutil.virtual_memory()[3] / 1000000000)
         self.valid_data = df
-        self.explainer = shap.TreeExplainer(
-            self.model,
-            # data=df,
-            # feature_perturbation="interventional",
-            # check_additivity=False,
-        )
-        print("RAM Used (GB):", psutil.virtual_memory()[3] / 1000000000)
+        # show_memory("before shap explainer")
+        self.explainer = shap.TreeExplainer(self.model)
+        # show_memory("after shap explainer")
 
     def predict(self, input: CreditModelInput):
         X = self.data.loc[self.data["SK_ID_CURR"] == input.client_id]
@@ -109,17 +128,19 @@ class CreditModel:
         }
 
     def shap_global(self):
-        # X = self.valid_data
-        # X = X.drop(["SK_ID_CURR"], axis=1)
-        # for col in X.columns:
-        #     if X[col].dtype == "bool":
-        #         X[col] = X[col].astype(int)
+        X = self.valid_data
+        X = X.drop(["SK_ID_CURR"], axis=1)
+        for col in X.columns:
+            if X[col].dtype == "bool":
+                X[col] = X[col].astype(int)
 
-        # shap_values = self.explainer(X)[:, :, 1]
-        # return {
-        #     "shap_values": shap_values.values.tolist(),
-        #     "base_value": shap_values.base_values.tolist(),
-        #     "data": shap_values.data.tolist(),
-        #     "feature_names": X.columns.tolist(),
-        # }
-        return {"toto": "toto"}
+        shap_values = self.explainer(
+            X,
+        )[:, :, 1]
+        # show_memory("shap_global before return")
+        return {
+            "shap_values": shap_values.values.tolist(),
+            "base_value": shap_values.base_values.tolist(),
+            "data": shap_values.data.tolist(),
+            "feature_names": X.columns.tolist(),
+        }
