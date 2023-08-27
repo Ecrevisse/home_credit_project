@@ -8,22 +8,24 @@ import os
 import shap
 import psutil
 import sys
+from pympler import asizeof
 
 
 def show_memory(prefix=""):
     process = psutil.Process(os.getpid())
     print(f"{prefix} -> RAM Used (MB): {process.memory_info().rss / 1024 ** 2}")
 
-    objs = gc.get_objects()
-    s = sys.getsizeof(objs)
-    sizes = []
-    for i, o in enumerate(objs):
-        sizes.append(sys.getsizeof(o))
-        s += sys.getsizeof(o)
-    sizes.sort()
+    # objs = gc.get_objects()
+    # print(asizeof.asizeof(objs))
+    # s = sys.getsizeof(objs)
+    # sizes = []
+    # for i, o in enumerate(objs):
+    #     sizes.append(asizeof.asizeof(o))
+    #     s += asizeof.asizeof(o)
+    # sizes.sort()
 
-    print(f"{prefix} -> Number of objects: {len(objs)}")
-    print(f"{prefix} -> Size of objects: {s / 1024 ** 2:.2f} MB")
+    # print(f"{prefix} -> Number of objects: {len(objs)}")
+    # print(f"{prefix} -> Size of objects: {s / 1024 ** 2:.2f} MB")
 
 
 class CreditModelInput(BaseModel):
@@ -60,24 +62,42 @@ class CreditModel:
         print(self.data.shape)
         print("model ready")
 
-        self._load_and_prep_explainer()
+        # show_memory("before del")
+        # print(f"model_sig: {asizeof.asizeof(python_model_for_signature)}")
+        # print(f"run: {asizeof.asizeof(run)}")
+        # print(f"client: {asizeof.asizeof(client)}")
+        # print(f"cols: {asizeof.asizeof(cols)}")
 
-        del python_model_for_signature
-        del run
-        del client
-        gc.collect()
+        # del python_model_for_signature
+        # del run
+        # del client
+        # del cols
+        # gc.collect()
+        # show_memory("after del")
+
+        self._load_and_prep_explainer()
 
     def _load_and_prepare_data(self, cols):
         # df = pd.read_csv("./input/cleaned_data.csv", index_col="index")
         df = pd.read_feather("./input/test_cleaned.feather")
+        # print(f"df: {asizeof.asizeof(df)}")
+        # show_memory("before test")
 
         test_df = df[df["TARGET"].isnull()]
+        # print(f"test_df: {asizeof.asizeof(test_df)}")
+        # show_memory("before del")
+        # del df
+        # gc.collect()
+        # show_memory("after del")
 
         test_df = test_df.fillna(0)
         test_df = test_df.replace([np.inf, -np.inf], 0)
 
         cols.append("SK_ID_CURR")
         test_df = test_df[cols]
+        # # del df
+        # # gc.collect()
+        # show_memory("after del")
         return test_df
 
     def _load_and_prep_explainer(self):
@@ -99,6 +119,7 @@ class CreditModel:
         # show_memory("before shap explainer")
         self.explainer = shap.TreeExplainer(self.model)
         # show_memory("after shap explainer")
+        del df
 
     def predict(self, input: CreditModelInput):
         X = self.data.loc[self.data["SK_ID_CURR"] == input.client_id]
@@ -110,6 +131,8 @@ class CreditModel:
             X,
             num_iteration=self.model.best_iteration_,
         )[:, 1]
+        del X
+        gc.collect()
         if len(pred) != 1:
             raise Exception(f"An issue occurred with the prediction")
         return 1 if (pred[0] > self.threshold) else 0, pred[0], self.threshold
