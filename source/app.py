@@ -39,5 +39,15 @@ def shapSummary():
     return model.shap_global()
 
 
+@app.post("/client_info")
+def client_info(input: ml.ClientInfoInput):
+    return model.client_info(input)
+
+
+@app.get("/model_features")
+def model_features():
+    return model.model_features()
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)

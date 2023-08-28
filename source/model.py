@@ -32,6 +32,11 @@ class CreditModelInput(BaseModel):
     client_id: int
 
 
+class ClientInfoInput(BaseModel):
+    client_id: int
+    client_infos: list[str]
+
+
 class CreditModel:
     def __init__(self):
         run_id = "0cb98077b68b4bba8ea208b79cb1d2e8"
@@ -62,48 +67,21 @@ class CreditModel:
         print(self.data.shape)
         print("model ready")
 
-        # show_memory("before del")
-        # print(f"model_sig: {asizeof.asizeof(python_model_for_signature)}")
-        # print(f"run: {asizeof.asizeof(run)}")
-        # print(f"client: {asizeof.asizeof(client)}")
-        # print(f"cols: {asizeof.asizeof(cols)}")
-
-        # del python_model_for_signature
-        # del run
-        # del client
-        # del cols
-        # gc.collect()
-        # show_memory("after del")
-
         self._load_and_prep_explainer()
 
     def _load_and_prepare_data(self, cols):
-        # df = pd.read_csv("./input/cleaned_data.csv", index_col="index")
         df = pd.read_feather("./input/test_cleaned.feather")
-        # print(f"df: {asizeof.asizeof(df)}")
-        # show_memory("before test")
 
         test_df = df[df["TARGET"].isnull()]
-        # print(f"test_df: {asizeof.asizeof(test_df)}")
-        # show_memory("before del")
-        # del df
-        # gc.collect()
-        # show_memory("after del")
-
         test_df = test_df.fillna(0)
         test_df = test_df.replace([np.inf, -np.inf], 0)
 
         cols.append("SK_ID_CURR")
         test_df = test_df[cols]
-        # # del df
-        # # gc.collect()
-        # show_memory("after del")
         return test_df
 
     def _load_and_prep_explainer(self):
-        # show_memory("before read_feather")
         df = pd.read_feather("./input/valid_cleaned.feather")
-        # show_memory("after read_feather")
 
         df = df[:1000]
         df = df.fillna(0)
@@ -113,12 +91,9 @@ class CreditModel:
             if df[col].dtype == "bool":
                 df[col] = df[col].astype(int)
 
-        # show_memory("before df = df[self.data.columns]")
         df = df[self.data.columns]
         self.valid_data = df
-        # show_memory("before shap explainer")
         self.explainer = shap.TreeExplainer(self.model)
-        # show_memory("after shap explainer")
         del df
 
     def predict(self, input: CreditModelInput):
@@ -160,10 +135,19 @@ class CreditModel:
         shap_values = self.explainer(
             X,
         )[:, :, 1]
-        # show_memory("shap_global before return")
         return {
             "shap_values": shap_values.values.tolist(),
             "base_value": shap_values.base_values.tolist(),
             "data": shap_values.data.tolist(),
             "feature_names": X.columns.tolist(),
         }
+
+    def client_info(self, input: ClientInfoInput):
+        X = self.data.loc[self.data["SK_ID_CURR"] == input.client_id]
+        if len(X) == 0:
+            raise Exception(f"Client ID {input.client_id} doesn't exist")
+        X = X.drop(["SK_ID_CURR"], axis=1)
+        return X[input.client_infos].values.tolist()
+
+    def model_features(self):
+        return self.data.columns.tolist()
